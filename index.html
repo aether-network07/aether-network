@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aether Network — Live Data</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0a0a1a; color:#fff; font-family:Arial,sans-serif; }
+  header { text-align:center; padding:30px; background:#111; }
+  header img { width:60px; }
+  h1 { color:#4f8ef7; font-size:24px; margin-top:10px; }
+  p.sub { color:#888; margin-top:5px; }
+  .stats { display:flex; justify-content:center; gap:20px; padding:20px; flex-wrap:wrap; }
+  .card { background:#111; border:1px solid #222; border-radius:12px; padding:20px; min-width:150px; text-align:center; }
+  .card h2 { font-size:32px; color:#4f8ef7; }
+  .card p { color:#888; font-size:12px; margin-top:5px; }
+  table { width:95%; margin:0 auto; border-collapse:collapse; }
+  th { background:#111; color:#4f8ef7; padding:12px; text-align:left; }
+  td { padding:10px 12px; border-bottom:1px solid #1a1a2e; font-size:13px; }
+  tr:hover { background:#111; }
+  .live { display:inline-block; width:8px; height:8px; background:#00ff88; border-radius:50%; margin-right:6px; animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  footer { text-align:center; padding:20px; color:#444; font-size:12px; margin-top:30px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌍 AETHER NETWORK</h1>
+  <p class="sub"><span class="live"></span>Réseau mondial de capteurs en temps réel</p>
+</header>
+
+<div class="stats">
+  <div class="card"><h2 id="total">-</h2><p>Mesures totales</p></div>
+  <div class="card"><h2 id="appareils">-</h2><p>Appareils actifs</p></div>
+  <div class="card"><h2 id="derniere">-</h2><p>Dernière mesure</p></div>
+</div>
+
+<br>
+<table>
+  <thead>
+    <tr>
+      <th>Appareil</th>
+      <th>Heure</th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>Lumière</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<footer>Aether Network © 2026 — Abidjan, Côte d'Ivoire</footer>
+
+<script>
+const URL = "https://svjzmkvvhqzonkfewxeu.supabase.co/rest/v1/sensor_data?order=created_at.desc&limit=20";
+const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2anpta3Z2aHF6b25rZmV3eGV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MDk2NjAsImV4cCI6MjA5MjM4NTY2MH0.LCcTDtPOSQz1ACpMk76PnlikVJBYaQWixMUCaAM1lI4";
+
+async function charger() {
+  const r = await fetch(URL, {headers:{apikey:KEY, Authorization:"Bearer "+KEY}});
+  const data = await r.json();
+  
+  document.getElementById("total").textContent = data.length;
+  const appareils = [...new Set(data.map(d=>d.device_id))].length;
+  document.getElementById("appareils").textContent = appareils;
+  
+  if(data.length > 0) {
+    const d = new Date(data[0].created_at);
+    document.getElementById("derniere").textContent = d.toLocaleTimeString();
+  }
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = data.map(d => `
+    <tr>
+      <td>📱 ${d.device_id}</td>
+      <td>${new Date(d.created_at).toLocaleTimeString()}</td>
+      <td>${d.accel_x?.toFixed(2)}</td>
+      <td>${d.accel_y?.toFixed(2)}</td>
+      <td>${d.accel_z?.toFixed(2)}</td>
+      <td>${d.lumiere} lux</td>
+    </tr>
+  `).join("");
+}
+
+charger();
+setInterval(charger, 10000);
+</script>
+</body>
+</html>
