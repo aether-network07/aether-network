@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="#0A0A1A">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⬡"
+        android:textSize="64sp"
+        android:textColor="#00D4FF"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AETHER NETWORK"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:letterSpacing="0.15"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Réseau mondial de capteurs"
+        android:textSize="14sp"
+        android:textColor="#7B8AB8"
+        android:layout_marginBottom="48dp"/>
+
+    <TextView
+        android:id="@+id/deviceIdText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID : chargement..."
+        android:textSize="12sp"
+        android:textColor="#4A5568"
+        android:fontFamily="monospace"
+        android:layout_marginBottom="32dp"/>
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚪ Déconnecté"
+        android:textSize="16sp"
+        android:textColor="#9CA3AF"
+        android:layout_marginBottom="40dp"/>
+
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="280dp"
+        android:layout_height="64dp"
+        android:text="🚀  SE CONNECTER AU RÉSEAU"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#00D4FF"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="280dp"
+        android:layout_height="48dp"
+        android:text="⏹  ARRÊTER"
+        android:textSize="14sp"
+        android:textColor="#FF6B6B"
+        android:backgroundTint="#1A1A2E"
+        android:enabled="false"
+        android:layout_marginBottom="48dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vos données contribuent à un réseau mondial de capteurs environnementaux"
+        android:textSize="12sp"
+        android:textColor="#4A5568"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"/>
+
+</LinearLayout>
