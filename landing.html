@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aether Network — Données environnementales mondiales</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a0f2e;
+    --blue: #1a3a8f;
+    --cyan: #00b4d8;
+    --cyan2: #0077b6;
+    --white: #f8fafc;
+    --gray: #94a3b8;
+    --light: #e2e8f0;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ANIMATED BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,180,216,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(26,58,143,0.2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,15,46,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-logo img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+  }
+
+  .nav-logo-text {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--white);
+  }
+
+  .nav-logo-text span { color: var(--cyan); }
+
+  .nav-cta {
+    background: var(--cyan);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 100px 24px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,180,216,0.12);
+    border: 1px solid rgba(0,180,216,0.3);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-badge-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero h1 {
+    font-size: clamp(32px, 8vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--cyan), #90e0ef);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: clamp(15px, 3vw, 20px);
+    color: var(--gray);
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--cyan);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 30px rgba(0,180,216,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 40px rgba(0,180,216,0.5);
+  }
+
+  .btn-secondary {
+    background: var(--card);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--cyan); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 60px 24px 0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--card);
+    backdrop-filter: blur(8px);
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .stat-item {
+    flex: 1;
+    min-width: 150px;
+    padding: 24px 20px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--cyan);
+    line-height: 1;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: 500;
+  }
+
+  /* SECTION */
+  section {
+    padding: 80px 24px;
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .section-title {
+    font-size: clamp(24px, 5vw, 40px);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 16px;
+    color: var(--gray);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  /* USE CASES */
+  .usecases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .usecase-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .usecase-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .usecase-card:hover {
+    border-color: rgba(0,180,216,0.4);
+    transform: translateY(-4px);
+  }
+
+  .usecase-card:hover::before { opacity: 1; }
+
+  .usecase-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .usecase-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .usecase-desc {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  .usecase-data {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .data-tag {
+    font-size: 10px;
+    font-weight: 600;
+    background: rgba(0,180,216,0.1);
+    border: 1px solid rgba(0,180,216,0.2);
+    color: var(--cyan);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* HOW IT WORKS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    position: relative;
+  }
+
+  .step {
+    text-align: center;
+    padding: 24px 16px;
+  }
+
+  .step-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0,180,216,0.1);
+    border: 2px solid rgba(0,180,216,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--cyan);
+    margin: 0 auto 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .step-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  /* PRICING */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .pricing-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    transition: border-color 0.3s;
+  }
+
+  .pricing-card.featured {
+    border-color: var(--cyan);
+    background: rgba(0,180,216,0.05);
+    position: relative;
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cyan);
+    color: var(--navy);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .pricing-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  .pricing-price {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .pricing-price span {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--gray);
+  }
+
+  .pricing-desc {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 20px;
+    margin-top: 8px;
+  }
+
+  .pricing-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pricing-features li {
+    font-size: 13px;
+    color: var(--light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pricing-features li::before {
+    content: '✓';
+    color: var(--cyan);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* CONTACT FORM */
+  .contact-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--light);
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus { border-color: var(--cyan); }
+
+  .form-input::placeholder { color: var(--gray); }
+
+  textarea.form-input { resize: vertical; min-height: 120px; }
+
+  .form-select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    appearance: none;
+  }
+
+  .form-select option { background: var(--navy); }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--cyan);
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 15px;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .btn-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  #form-success {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    color: #4ade80;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-logo {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .footer-logo span { color: var(--cyan); }
+
+  footer p {
+    font-size: 13px;
+    color: var(--gray);
+  }
+
+  footer a {
+    color: var(--cyan);
+    text-decoration: none;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 24px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="logo.png" alt="Aether Network">
+    <div class="nav-logo-text">AETHER <span>NETWORK</span></div>
+  </div>
+  <a href="#contact" class="nav-cta">Nous contacter</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    Réseau actif en temps réel
+  </div>
+  <h1>Les données du monde réel,<br><span>à portée de main</span></h1>
+  <p>Aether Network collecte des données environnementales en temps réel grâce à un réseau mondial de smartphones — luminosité, son, mouvement, GPS, température.</p>
+  <div class="hero-btns">
+    <a href="#contact" class="btn-primary">Accéder aux données →</a>
+    <a href="#usecases" class="btn-secondary">Voir les cas d'usage</a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num" id="live-devices">1</div>
+    <div class="stat-label">Appareils actifs</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" id="live-total">—</div>
+    <div class="stat-label">Mesures collectées</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">8</div>
+    <div class="stat-label">Types de capteurs</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">15s</div>
+    <div class="stat-label">Fréquence de collecte</div>
+  </div>
+</div>
+
+<!-- USE CASES -->
+<section id="usecases">
+  <div class="section-tag">// Cas d'usage</div>
+  <div class="section-title">Qui utilise nos données ?</div>
+  <div class="section-sub">Des chercheurs aux entreprises, Aether Network fournit des données environnementales précises et économiques.</div>
+
+  <div class="usecases-grid">
+    <div class="usecase-card">
+      <div class="usecase-icon">🌦️</div>
+      <div class="usecase-title">Météorologie & Climat</div>
+      <div class="usecase-desc">Complétez vos modèles climatiques avec des données hyperlocales collectées en temps réel dans des zones sans station météo.</div>
+      <div class="usecase-data">
+        <span class="data-tag">luminosité</span>
+        <span class="data-tag">température</span>
+        <span class="data-tag">GPS</span>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">🏙️</div>
+      <div class="usecase-title">Urbanisme & Smart City</div>
+      <div class="usecase-desc">Cartographiez la pollution sonore, lumineuse et les flux de mobilité urbaine pour optimiser l'aménagement des villes.</div>
+      <div class="usecase-data">
+        <span class="data-tag">décibels</span>
+        <span class="data-tag">accéléromètre</span>
+        <span class="data-tag">position</span>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">🔬</div>
+      <div class="usecase-title">Recherche académique</div>
+      <div class="usecase-desc">Accédez à des datasets environnementaux uniques pour vos projets de recherche en géographie, sociologie ou sciences du climat.</div>
+      <div class="usecase-data">
+        <span class="data-tag">tous capteurs</span>
+        <span class="data-tag">historique</span>
+        <span class="data-tag">API</span>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">🏢</div>
+      <div class="usecase-title">Assurance & Sécurité</div>
+      <div class="usecase-desc">Détectez des événements anormaux (chutes, vibrations, changements brusques) pour des solutions d'assurance intelligentes.</div>
+      <div class="usecase-data">
+        <span class="data-tag">gyroscope</span>
+        <span class="data-tag">accéléromètre</span>
+        <span class="data-tag">alertes</span>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">🌱</div>
+      <div class="usecase-title">Agriculture de précision</div>
+      <div class="usecase-desc">Surveillez les conditions d'ensoleillement et d'environnement dans les zones agricoles pour optimiser les rendements.</div>
+      <div class="usecase-data">
+        <span class="data-tag">luminosité</span>
+        <span class="data-tag">température</span>
+        <span class="data-tag">zones</span>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">📡</div>
+      <div class="usecase-title">IoT & Startups Tech</div>
+      <div class="usecase-desc">Intégrez notre flux de données en temps réel dans vos applications via notre API simple — sans infrastructure matérielle coûteuse.</div>
+      <div class="usecase-data">
+        <span class="data-tag">API REST</span>
+        <span class="data-tag">temps réel</span>
+        <span class="data-tag">JSON</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="section-tag">// Comment ça marche</div>
+  <div class="section-title">Simple, rapide, économique</div>
+  <div class="section-sub">Notre réseau transforme les smartphones en capteurs professionnels à une fraction du coût traditionnel.</div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Réseau de capteurs</div>
+      <div class="step-desc">Des milliers de smartphones collectent des données environnementales 24h/24 via notre application.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Traitement cloud</div>
+      <div class="step-desc">Les données sont agrégées, validées et stockées en temps réel dans notre infrastructure cloud sécurisée.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Accès API</div>
+      <div class="step-desc">Vous accédez aux données via notre API REST simple ou notre tableau de bord en ligne.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-title">Insights & Analytics</div>
+      <div class="step-desc">Visualisez, filtrez et exportez les données selon vos besoins — par zone, période ou type de capteur.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRICING -->
+<section>
+  <div class="section-tag">// Tarification</div>
+  <div class="section-title">Des prix accessibles</div>
+  <div class="section-sub">Commencez gratuitement, évoluez selon vos besoins.</div>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Découverte</div>
+      <div class="pricing-price">Gratuit</div>
+      <div class="pricing-desc">Pour tester nos données</div>
+      <ul class="pricing-features">
+        <li>1 000 mesures/mois</li>
+        <li>Accès tableau de bord</li>
+        <li>3 types de capteurs</li>
+        <li>Support email</li>
+      </ul>
+    </div>
+    <div class="pricing-card featured">
+      <div class="featured-badge">Populaire</div>
+      <div class="pricing-name">Recherche</div>
+      <div class="pricing-price">50$ <span>/ mois</span></div>
+      <div class="pricing-desc">Pour les équipes de recherche</div>
+      <ul class="pricing-features">
+        <li>100 000 mesures/mois</li>
+        <li>API REST complète</li>
+        <li>Tous les capteurs</li>
+        <li>Export CSV/JSON</li>
+        <li>Support prioritaire</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">Entreprise</div>
+      <div class="pricing-price">Sur devis</div>
+      <div class="pricing-desc">Pour les grands comptes</div>
+      <ul class="pricing-features">
+        <li>Données illimitées</li>
+        <li>Zones géographiques dédiées</li>
+        <li>Intégration sur mesure</li>
+        <li>SLA garanti</li>
+        <li>Account manager dédié</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-tag">// Contact</div>
+  <div class="section-title">Intéressé par nos données ?</div>
+  <div class="section-sub">Contactez-nous pour un accès gratuit ou une démonstration personnalisée.</div>
+
+  <div class="contact-wrap">
+    <form id="contact-form" onsubmit="submitForm(event)">
+      <div class="form-group">
+        <label class="form-label">Nom & Prénom *</label>
+        <input type="text" class="form-input" placeholder="Dr. Jean Martin" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email professionnel *</label>
+        <input type="email" class="form-input" placeholder="jean.martin@universite.fr" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Organisation *</label>
+        <input type="text" class="form-input" placeholder="Université de Paris / Startup XYZ" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type d'utilisation</label>
+        <select class="form-select form-input">
+          <option>Recherche académique</option>
+          <option>Projet commercial</option>
+          <option>Collectivité / ONG</option>
+          <option>Startup / Innovation</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Décrivez votre projet</label>
+        <textarea class="form-input" placeholder="Expliquez brièvement comment vous souhaitez utiliser nos données environnementales..."></textarea>
+      </div>
+      <button type="submit" class="btn-submit">Envoyer la demande →</button>
+    </form>
+    <div id="form-success">
+      ✅ Merci ! Nous vous contacterons dans les 24h.
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">AETHER <span>NETWORK</span></div>
+  <p>Réseau mondial de capteurs environnementaux · <a href="mailto:aether.netwok07@gmail.com">aether.netwok07@gmail.com</a></p>
+  <p style="margin-top:8px">© 2026 Aether Network — Tous droits réservés</p>
+</footer>
+
+<script>
+// Live stats from Supabase
+const SUPABASE_URL = 'https://svjzmkvvhqzonkfewxeu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2anpta3Z2aHF6b25rZmV3eGV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MDk2NjAsImV4cCI6MjA5MjM4NTY2MH0.LCcTDtPOSQz1ACpMk76PnlikVJBYaQWixMUCaAM1lI4';
+
+async function loadStats() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/sensor_data?select=device_id,created_at&order=created_at.desc&limit=100`,
+      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+    );
+    const data = await res.json();
+    if (data && data.length) {
+      const devices = [...new Set(data.map(d => d.device_id))].length;
+      document.getElementById('live-devices').textContent = devices;
+      document.getElementById('live-total').textContent = data.length + '+';
+    }
+  } catch(e) {}
+}
+
+function submitForm(e) {
+  e.preventDefault();
+  document.getElementById('contact-form').style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+}
+
+loadStats();
+</script>
+</body>
+</html>
