@@ -4,273 +4,319 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aether Network — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root {
-    --bg: #050510;
-    --bg2: #0a0a1f;
-    --card: #0d0d2b;
-    --border: #1a1a4a;
-    --cyan: #00d4ff;
-    --purple: #7c3aed;
-    --green: #00ff9d;
-    --orange: #ff6b35;
-    --text: #e2e8f0;
-    --muted: #4a5568;
-  }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
+    background: #f0f4f8;
+    color: #1a2340;
+    font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
-  /* Animated background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px 16px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Header */
-  header {
+  /* TOP HEADER BAR */
+  .topbar {
+    background: #1a2340;
+    padding: 0 24px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 32px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
   }
 
-  .logo {
+  .topbar-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
-  .logo-hex {
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--cyan);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    background: rgba(0,212,255,0.1);
-    animation: pulse 3s ease-in-out infinite;
+  .topbar-logo img {
+    width: 32px;
+    height: 32px;
   }
 
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.4); }
-    50% { box-shadow: 0 0 20px 4px rgba(0,212,255,0.2); }
+  .topbar-logo-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.05em;
   }
 
-  .logo-text h1 {
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    color: var(--cyan);
+  .topbar-logo-text span {
+    color: #3b9eff;
   }
 
-  .logo-text p {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-  }
-
-  .status-live {
+  .topbar-right {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: var(--green);
-    background: rgba(0,255,157,0.08);
-    border: 1px solid rgba(0,255,157,0.2);
-    padding: 6px 12px;
+    gap: 16px;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 4px 12px;
     border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4ade80;
   }
 
-  .dot {
-    width: 8px;
-    height: 8px;
-    background: var(--green);
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    background: #4ade80;
     border-radius: 50%;
-    animation: blink 1.5s ease-in-out infinite;
+    animation: blink 1.5s infinite;
   }
 
   @keyframes blink {
-    0%, 100% { opacity: 1; }
+    0%,100% { opacity: 1; }
     50% { opacity: 0.3; }
   }
 
-  /* Stats grid */
-  .stats-grid {
+  .last-update {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* SUBTITLE BAR */
+  .subtitle-bar {
+    background: #fff;
+    padding: 12px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .subtitle-bar h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2340;
+  }
+
+  .subtitle-bar p {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  /* MAIN CONTAINER */
+  .container {
+    padding: 20px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* KPI CARDS ROW */
+  .kpi-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 14px;
+    margin-bottom: 20px;
   }
 
   @media (min-width: 640px) {
-    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+    .kpi-row { grid-template-columns: repeat(4, 1fr); }
   }
 
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
+  .kpi-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 18px;
+    border-left: 4px solid var(--accent);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     position: relative;
     overflow: hidden;
-    transition: border-color 0.3s;
   }
 
-  .stat-card::before {
-    content: '';
+  .kpi-card::after {
+    content: var(--icon);
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent, var(--cyan));
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 28px;
+    opacity: 0.15;
   }
 
-  .stat-card:hover { border-color: var(--cyan); }
-
-  .stat-label {
-    font-size: 10px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 0.1em;
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
   }
 
-  .stat-value {
-    font-size: 26px;
+  .kpi-value {
+    font-size: 28px;
     font-weight: 800;
-    color: var(--accent, var(--cyan));
+    color: var(--accent);
     line-height: 1;
     margin-bottom: 4px;
   }
 
-  .stat-unit {
+  .kpi-sub {
     font-size: 11px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
+    color: #94a3b8;
   }
 
-  /* Main grid */
-  .main-grid {
+  .kpi-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #22c55e;
+    background: #dcfce7;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-top: 4px;
+  }
+
+  /* CHARTS ROW */
+  .charts-row {
     display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
-  @media (min-width: 768px) {
-    .main-grid { grid-template-columns: 2fr 1fr; }
+  @media (min-width: 900px) {
+    .charts-row { grid-template-columns: 2fr 1fr; }
   }
 
   .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
   }
 
   .card-title {
-    font-size: 12px;
-    font-family: 'Space Mono', monospace;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .card-title span {
-    color: var(--cyan);
-    font-size: 10px;
-  }
-
-  /* Sensor rows */
-  .sensor-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
-
-  .sensor-row:last-child { border-bottom: none; }
-
-  .sensor-name {
     font-size: 13px;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .sensor-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    background: rgba(0,212,255,0.08);
-  }
-
-  .sensor-val {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    color: var(--cyan);
     font-weight: 700;
+    color: #1a2340;
   }
 
-  /* Chart container */
+  .card-title-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  .card-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #3b9eff;
+  }
+
   .chart-wrap {
     position: relative;
     height: 200px;
   }
 
-  /* Device list */
-  .device-item {
+  /* SENSORS TABLE */
+  .sensors-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .sensor-item {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .sensor-item-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .sensor-item-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2340;
+  }
+
+  .sensor-item-unit {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  /* GAUGE */
+  .gauge-wrap {
+    margin-top: 6px;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .gauge-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #3b9eff, #22c55e);
+    transition: width 1s ease;
+  }
+
+  /* BOTTOM ROW */
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 900px) {
+    .bottom-row { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  /* DEVICE LIST */
+  .device-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
   }
 
-  .device-item:last-child { border-bottom: none; }
+  .device-row:last-child { border-bottom: none; }
 
   .device-avatar {
     width: 36px;
     height: 36px;
     border-radius: 8px;
-    background: rgba(124,58,237,0.2);
-    border: 1px solid rgba(124,58,237,0.3);
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -281,9 +327,9 @@
   .device-info { flex: 1; min-width: 0; }
 
   .device-id {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a2340;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -291,37 +337,25 @@
 
   .device-time {
     font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
+    color: #94a3b8;
+    margin-top: 1px;
   }
 
-  .device-status {
+  .device-online {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--green);
-    flex-shrink: 0;
+    background: #22c55e;
+    box-shadow: 0 0 0 3px #dcfce7;
   }
 
-  /* Bottom grid */
-  .bottom-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  @media (min-width: 768px) {
-    .bottom-grid { grid-template-columns: 1fr 1fr; }
-  }
-
-  /* Loading */
+  /* LOADING */
   .loading {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
+    height: 80px;
+    color: #94a3b8;
     font-size: 12px;
     gap: 8px;
   }
@@ -329,130 +363,186 @@
   .spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid var(--border);
-    border-top-color: var(--cyan);
+    border: 2px solid #e2e8f0;
+    border-top-color: #3b9eff;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Bar gauge */
-  .gauge-bar {
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 6px;
-  }
-
-  .gauge-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: var(--cyan);
-    transition: width 1s ease;
-  }
-
-  /* Footer */
+  /* FOOTER */
   footer {
     text-align: center;
-    padding: 20px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
+    padding: 16px;
+    color: #94a3b8;
     font-size: 11px;
-    border-top: 1px solid var(--border);
-    margin-top: 24px;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 20px;
+    background: #fff;
   }
 
-  #last-update {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
+  /* GPS CARD */
+  .gps-display {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .gps-coords {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a2340;
+    margin-bottom: 4px;
+  }
+
+  .gps-label {
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  .gps-map-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #3b9eff;
+    text-decoration: none;
+    font-weight: 600;
   }
 </style>
 </head>
 <body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div style="width:32px;height:32px;background:#3b9eff;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;">
+    </div>
+    <div class="topbar-logo-text">AETHER <span>NETWORK</span></div>
+  </div>
+  <div class="topbar-right">
+    <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+    <div class="last-update" id="last-update">Chargement...</div>
+  </div>
+</div>
+
+<!-- SUBTITLE -->
+<div class="subtitle-bar">
+  <div>
+    <h1>Tableau de bord — Réseau de capteurs</h1>
+    <p>Données environnementales en temps réel · Actualisé toutes les 15s</p>
+  </div>
+</div>
+
 <div class="container">
 
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <div class="logo-hex"></div>
-      <div class="logo-text">
-        <h1>AETHER NETWORK</h1>
-        <p>Réseau mondial de capteurs</p>
-      </div>
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card" style="--accent:#3b9eff; --icon:'📱'">
+      <div class="kpi-label">Appareils actifs</div>
+      <div class="kpi-value" id="kpi-devices">—</div>
+      <div class="kpi-sub">téléphones connectés</div>
+      <div class="kpi-change">↑ En ligne</div>
     </div>
-    <div class="status-live">
-      <div class="dot"></div>
-      LIVE
+    <div class="kpi-card" style="--accent:#22c55e; --icon:'📊'">
+      <div class="kpi-label">Total mesures</div>
+      <div class="kpi-value" id="kpi-total">—</div>
+      <div class="kpi-sub">enregistrements</div>
+      <div class="kpi-change">↑ +4/min</div>
     </div>
-  </header>
-
-  <!-- Stats cards -->
-  <div class="stats-grid">
-    <div class="stat-card" style="--accent: #00d4ff">
-      <div class="stat-label">Appareils actifs</div>
-      <div class="stat-value" id="stat-devices">—</div>
-      <div class="stat-unit">téléphones</div>
+    <div class="kpi-card" style="--accent:#f59e0b; --icon:'💡'">
+      <div class="kpi-label">Luminosité moy.</div>
+      <div class="kpi-value" id="kpi-light">—</div>
+      <div class="kpi-sub">lux</div>
     </div>
-    <div class="stat-card" style="--accent: #00ff9d">
-      <div class="stat-label">Total mesures</div>
-      <div class="stat-value" id="stat-total">—</div>
-      <div class="stat-unit">enregistrements</div>
-    </div>
-    <div class="stat-card" style="--accent: #ff6b35">
-      <div class="stat-label">Luminosité moy.</div>
-      <div class="stat-value" id="stat-light">—</div>
-      <div class="stat-unit">lux</div>
-    </div>
-    <div class="stat-card" style="--accent: #7c3aed">
-      <div class="stat-label">Batterie moy.</div>
-      <div class="stat-value" id="stat-battery">—</div>
-      <div class="stat-unit">%</div>
+    <div class="kpi-card" style="--accent:#8b5cf6; --icon:'🔋'">
+      <div class="kpi-label">Batterie moy.</div>
+      <div class="kpi-value" id="kpi-battery">—</div>
+      <div class="kpi-sub">%</div>
     </div>
   </div>
 
-  <!-- Main grid -->
-  <div class="main-grid">
+  <!-- CHARTS ROW -->
+  <div class="charts-row">
 
-    <!-- Chart -->
+    <!-- Accel Chart -->
     <div class="card">
-      <div class="card-title">
-        Accéléromètre (dernières mesures)
-        <span id="last-update">—</span>
+      <div class="card-header">
+        <div>
+          <div class="card-title">Accéléromètre — Axes X / Y / Z</div>
+          <div class="card-title-sub">20 dernières mesures</div>
+        </div>
+        <div class="card-badge">Temps réel</div>
       </div>
       <div class="chart-wrap">
         <canvas id="accelChart"></canvas>
       </div>
     </div>
 
-    <!-- Devices -->
+    <!-- Sensors detail -->
     <div class="card">
-      <div class="card-title">Appareils connectés</div>
-      <div id="devices-list">
-        <div class="loading"><div class="spinner"></div> Chargement...</div>
+      <div class="card-header">
+        <div>
+          <div class="card-title">Dernière mesure</div>
+          <div class="card-title-sub" id="sensor-time">—</div>
+        </div>
+      </div>
+      <div class="sensors-grid" id="sensors-grid">
+        <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
 
   </div>
 
-  <!-- Bottom grid -->
-  <div class="bottom-grid">
-
-    <!-- Latest sensors -->
-    <div class="card">
-      <div class="card-title">Dernière mesure</div>
-      <div id="sensors-list">
-        <div class="loading"><div class="spinner"></div> Chargement...</div>
-      </div>
-    </div>
+  <!-- BOTTOM ROW -->
+  <div class="bottom-row">
 
     <!-- Light chart -->
     <div class="card">
-      <div class="card-title">Luminosité — historique</div>
-      <div class="chart-wrap">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Luminosité (lux)</div>
+          <div class="card-title-sub">Historique</div>
+        </div>
+        <div class="card-badge">Capteur lumière</div>
+      </div>
+      <div class="chart-wrap" style="height:160px">
         <canvas id="lightChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Decibels chart -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Niveau sonore (dB)</div>
+          <div class="card-title-sub">Historique</div>
+        </div>
+        <div class="card-badge">Microphone</div>
+      </div>
+      <div class="chart-wrap" style="height:160px">
+        <canvas id="decibelChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Devices + GPS -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Appareils connectés</div>
+          <div class="card-title-sub">Réseau actif</div>
+        </div>
+      </div>
+      <div id="devices-list">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+      <div class="gps-display">
+        <div class="gps-coords" id="gps-coords">—</div>
+        <div class="gps-label">Coordonnées GPS</div>
+        <a class="gps-map-link" id="gps-link" href="#" target="_blank">📍 Voir sur Google Maps</a>
       </div>
     </div>
 
@@ -461,14 +551,14 @@
 </div>
 
 <footer>
-  AETHER NETWORK © 2026 — Données actualisées toutes les 15s
+  AETHER NETWORK © 2026 — Tableau de bord en temps réel · Données actualisées toutes les 15 secondes
 </footer>
 
 <script>
 const SUPABASE_URL = 'https://svjzmkvvhqzonkfewxeu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2anpta3Z2aHF6b25rZmV3eGV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MDk2NjAsImV4cCI6MjA5MjM4NTY2MH0.LCcTDtPOSQz1ACpMk76PnlikVJBYaQWixMUCaAM1lI4';
 
-let accelChart, lightChart;
+let accelChart, lightChart, decibelChart;
 
 async function fetchData() {
   const res = await fetch(
@@ -486,56 +576,69 @@ function timeAgo(dateStr) {
 }
 
 function initCharts() {
-  const chartDefaults = {
+  const gridColor = 'rgba(0,0,0,0.05)';
+  const tickColor = '#94a3b8';
+
+  const base = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: '#4a5568', font: { family: 'Space Mono', size: 10 } } } },
+    plugins: { legend: { labels: { color: tickColor, font: { size: 10, family: 'Inter' } } } },
     scales: {
-      x: { ticks: { color: '#4a5568', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-      y: { ticks: { color: '#4a5568', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+      x: { ticks: { color: tickColor, font: { size: 9 } }, grid: { color: gridColor } },
+      y: { ticks: { color: tickColor, font: { size: 9 } }, grid: { color: gridColor } }
     }
   };
 
   accelChart = new Chart(document.getElementById('accelChart'), {
     type: 'line',
     data: { labels: [], datasets: [
-      { label: 'X', data: [], borderColor: '#00d4ff', borderWidth: 1.5, pointRadius: 0, tension: 0.4 },
-      { label: 'Y', data: [], borderColor: '#7c3aed', borderWidth: 1.5, pointRadius: 0, tension: 0.4 },
-      { label: 'Z', data: [], borderColor: '#00ff9d', borderWidth: 1.5, pointRadius: 0, tension: 0.4 },
+      { label: 'X', data: [], borderColor: '#3b9eff', backgroundColor: 'rgba(59,158,255,0.05)', borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true },
+      { label: 'Y', data: [], borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.05)', borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true },
+      { label: 'Z', data: [], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.05)', borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true },
     ]},
-    options: chartDefaults
+    options: base
   });
 
   lightChart = new Chart(document.getElementById('lightChart'), {
     type: 'bar',
     data: { labels: [], datasets: [{
       label: 'Lux', data: [],
-      backgroundColor: 'rgba(255,107,53,0.3)',
-      borderColor: '#ff6b35', borderWidth: 1,
+      backgroundColor: 'rgba(245,158,11,0.7)',
+      borderColor: '#f59e0b', borderWidth: 1, borderRadius: 4,
     }]},
-    options: { ...chartDefaults, plugins: { legend: { display: false } } }
+    options: { ...base, plugins: { legend: { display: false } } }
+  });
+
+  decibelChart = new Chart(document.getElementById('decibelChart'), {
+    type: 'line',
+    data: { labels: [], datasets: [{
+      label: 'dB', data: [],
+      borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)',
+      borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true,
+    }]},
+    options: { ...base, plugins: { legend: { display: false } } }
   });
 }
 
 function updateDashboard(data) {
   if (!data || !data.length) return;
 
-  // Stats
   const devices = [...new Set(data.map(d => d.device_id))];
-  document.getElementById('stat-devices').textContent = devices.length;
-  document.getElementById('stat-total').textContent = data.length;
+  document.getElementById('kpi-devices').textContent = devices.length;
+  document.getElementById('kpi-total').textContent = data.length;
 
-  const avgLight = (data.filter(d => d.lumiere).reduce((s, d) => s + d.lumiere, 0) / data.filter(d => d.lumiere).length).toFixed(0);
-  const avgBatt = (data.filter(d => d.battery_level).reduce((s, d) => s + d.battery_level, 0) / data.filter(d => d.battery_level).length).toFixed(0);
-  document.getElementById('stat-light').textContent = avgLight || '—';
-  document.getElementById('stat-battery').textContent = avgBatt || '—';
+  const lightData = data.filter(d => d.lumiere != null);
+  const battData = data.filter(d => d.battery_level != null);
+  const avgLight = lightData.length ? (lightData.reduce((s,d) => s + d.lumiere, 0) / lightData.length).toFixed(0) : '—';
+  const avgBatt = battData.length ? (battData.reduce((s,d) => s + d.battery_level, 0) / battData.length).toFixed(0) : '—';
+  document.getElementById('kpi-light').textContent = avgLight;
+  document.getElementById('kpi-battery').textContent = avgBatt;
+  document.getElementById('last-update').textContent = `Mis à jour ${timeAgo(data[0].created_at)}`;
 
-  // Last update
-  document.getElementById('last-update').textContent = timeAgo(data[0].created_at);
-
-  // Charts — last 20 points
+  // Charts
   const recent = [...data].reverse().slice(-20);
   const labels = recent.map((_, i) => i + 1);
+
   accelChart.data.labels = labels;
   accelChart.data.datasets[0].data = recent.map(d => d.accel_x?.toFixed(2));
   accelChart.data.datasets[1].data = recent.map(d => d.accel_y?.toFixed(2));
@@ -546,47 +649,62 @@ function updateDashboard(data) {
   lightChart.data.datasets[0].data = recent.map(d => d.lumiere?.toFixed(1));
   lightChart.update('none');
 
-  // Latest sensors
-  const latest = data[0];
-  document.getElementById('sensors-list').innerHTML = `
-    <div class="sensor-row">
-      <div class="sensor-name"><div class="sensor-icon">📡</div> Accél. X/Y/Z</div>
-      <div class="sensor-val">${latest.accel_x?.toFixed(1)} / ${latest.accel_y?.toFixed(1)} / ${latest.accel_z?.toFixed(1)}</div>
+  decibelChart.data.labels = labels;
+  decibelChart.data.datasets[0].data = recent.map(d => d.decibels?.toFixed(1));
+  decibelChart.update('none');
+
+  // Sensors detail
+  const l = data[0];
+  document.getElementById('sensor-time').textContent = timeAgo(l.created_at);
+  document.getElementById('sensors-grid').innerHTML = `
+    <div class="sensor-item">
+      <div class="sensor-item-label">📡 Accél. X</div>
+      <div class="sensor-item-value">${l.accel_x?.toFixed(2)} <span class="sensor-item-unit">m/s²</span></div>
     </div>
-    <div class="sensor-row">
-      <div class="sensor-name"><div class="sensor-icon">💡</div> Luminosité</div>
-      <div class="sensor-val">${latest.lumiere?.toFixed(0)} lux</div>
+    <div class="sensor-item">
+      <div class="sensor-item-label">📡 Accél. Y</div>
+      <div class="sensor-item-value">${l.accel_y?.toFixed(2)} <span class="sensor-item-unit">m/s²</span></div>
     </div>
-    <div class="sensor-row">
-      <div class="sensor-name"><div class="sensor-icon">🎙️</div> Décibels</div>
-      <div class="sensor-val">${latest.decibels?.toFixed(1)} dB</div>
+    <div class="sensor-item">
+      <div class="sensor-item-label">💡 Lumière</div>
+      <div class="sensor-item-value">${l.lumiere?.toFixed(0)} <span class="sensor-item-unit">lux</span></div>
     </div>
-    <div class="sensor-row">
-      <div class="sensor-name"><div class="sensor-icon">🔋</div> Batterie</div>
-      <div class="sensor-val">${latest.battery_level}%</div>
-      <div class="gauge-bar" style="width:80px"><div class="gauge-fill" style="width:${latest.battery_level}%"></div></div>
+    <div class="sensor-item">
+      <div class="sensor-item-label">🎙️ Son</div>
+      <div class="sensor-item-value">${l.decibels?.toFixed(1)} <span class="sensor-item-unit">dB</span></div>
     </div>
-    <div class="sensor-row">
-      <div class="sensor-name"><div class="sensor-icon">🌀</div> Gyro X/Y/Z</div>
-      <div class="sensor-val">${latest.gyro_x?.toFixed(2)} / ${latest.gyro_y?.toFixed(2)} / ${latest.gyro_z?.toFixed(2)}</div>
+    <div class="sensor-item" style="grid-column:1/-1">
+      <div class="sensor-item-label">🔋 Batterie</div>
+      <div class="sensor-item-value">${l.battery_level} <span class="sensor-item-unit">%</span></div>
+      <div class="gauge-wrap"><div class="gauge-fill" style="width:${l.battery_level}%"></div></div>
     </div>
-    <div class="sensor-row">
-      <div class="sensor-name"><div class="sensor-icon">📍</div> GPS</div>
-      <div class="sensor-val">${latest.lat?.toFixed(3)}, ${latest.lon?.toFixed(3)}</div>
+    <div class="sensor-item">
+      <div class="sensor-item-label">🌀 Gyro X</div>
+      <div class="sensor-item-value">${l.gyro_x?.toFixed(2)}</div>
+    </div>
+    <div class="sensor-item">
+      <div class="sensor-item-label">🌀 Gyro Y</div>
+      <div class="sensor-item-value">${l.gyro_y?.toFixed(2)}</div>
     </div>
   `;
 
-  // Devices list
+  // GPS
+  if (l.lat && l.lon && l.lat !== 0) {
+    document.getElementById('gps-coords').textContent = `${l.lat.toFixed(4)}, ${l.lon.toFixed(4)}`;
+    document.getElementById('gps-link').href = `https://maps.google.com/?q=${l.lat},${l.lon}`;
+  }
+
+  // Devices
   document.getElementById('devices-list').innerHTML = devices.map(id => {
-    const lastSeen = data.find(d => d.device_id === id);
+    const last = data.find(d => d.device_id === id);
     return `
-      <div class="device-item">
+      <div class="device-row">
         <div class="device-avatar">📱</div>
         <div class="device-info">
           <div class="device-id">${id}</div>
-          <div class="device-time">${timeAgo(lastSeen.created_at)}</div>
+          <div class="device-time">${timeAgo(last.created_at)}</div>
         </div>
-        <div class="device-status"></div>
+        <div class="device-online"></div>
       </div>
     `;
   }).join('');
@@ -596,9 +714,7 @@ async function refresh() {
   try {
     const data = await fetchData();
     updateDashboard(data);
-  } catch (e) {
-    console.error('Erreur:', e);
-  }
+  } catch(e) { console.error(e); }
 }
 
 initCharts();
