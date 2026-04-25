@@ -3,89 +3,607 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aether Network — Live Data</title>
+<title>Aether Network — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#0a0a1a; color:#fff; font-family:Arial,sans-serif; }
-  header { text-align:center; padding:30px; background:#111; }
-  header img { width:60px; }
-  h1 { color:#4f8ef7; font-size:24px; margin-top:10px; }
-  p.sub { color:#888; margin-top:5px; }
-  .stats { display:flex; justify-content:center; gap:20px; padding:20px; flex-wrap:wrap; }
-  .card { background:#111; border:1px solid #222; border-radius:12px; padding:20px; min-width:150px; text-align:center; }
-  .card h2 { font-size:32px; color:#4f8ef7; }
-  .card p { color:#888; font-size:12px; margin-top:5px; }
-  table { width:95%; margin:0 auto; border-collapse:collapse; }
-  th { background:#111; color:#4f8ef7; padding:12px; text-align:left; }
-  td { padding:10px 12px; border-bottom:1px solid #1a1a2e; font-size:13px; }
-  tr:hover { background:#111; }
-  .live { display:inline-block; width:8px; height:8px; background:#00ff88; border-radius:50%; margin-right:6px; animation:pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  footer { text-align:center; padding:20px; color:#444; font-size:12px; margin-top:30px; }
+  :root {
+    --bg: #050510;
+    --bg2: #0a0a1f;
+    --card: #0d0d2b;
+    --border: #1a1a4a;
+    --cyan: #00d4ff;
+    --purple: #7c3aed;
+    --green: #00ff9d;
+    --orange: #ff6b35;
+    --text: #e2e8f0;
+    --muted: #4a5568;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-hex {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--cyan);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: rgba(0,212,255,0.1);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.4); }
+    50% { box-shadow: 0 0 20px 4px rgba(0,212,255,0.2); }
+  }
+
+  .logo-text h1 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+  }
+
+  .logo-text p {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .status-live {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    background: rgba(0,255,157,0.08);
+    border: 1px solid rgba(0,255,157,0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  @media (min-width: 640px) {
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent, var(--cyan));
+  }
+
+  .stat-card:hover { border-color: var(--cyan); }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--accent, var(--cyan));
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-unit {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Main grid */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .main-grid { grid-template-columns: 2fr 1fr; }
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title span {
+    color: var(--cyan);
+    font-size: 10px;
+  }
+
+  /* Sensor rows */
+  .sensor-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .sensor-row:last-child { border-bottom: none; }
+
+  .sensor-name {
+    font-size: 13px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sensor-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    background: rgba(0,212,255,0.08);
+  }
+
+  .sensor-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    font-weight: 700;
+  }
+
+  /* Chart container */
+  .chart-wrap {
+    position: relative;
+    height: 200px;
+  }
+
+  /* Device list */
+  .device-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .device-item:last-child { border-bottom: none; }
+
+  .device-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(124,58,237,0.2);
+    border: 1px solid rgba(124,58,237,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .device-info { flex: 1; min-width: 0; }
+
+  .device-id {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .device-time {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .device-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  /* Bottom grid */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .bottom-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Loading */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Bar gauge */
+  .gauge-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+
+  .gauge-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--cyan);
+    transition: width 1s ease;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+
+  #last-update {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
 </style>
 </head>
 <body>
+<div class="container">
 
-<header>
-  <h1>🌍 AETHER NETWORK</h1>
-  <p class="sub"><span class="live"></span>Réseau mondial de capteurs en temps réel</p>
-</header>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-hex"></div>
+      <div class="logo-text">
+        <h1>AETHER NETWORK</h1>
+        <p>Réseau mondial de capteurs</p>
+      </div>
+    </div>
+    <div class="status-live">
+      <div class="dot"></div>
+      LIVE
+    </div>
+  </header>
 
-<div class="stats">
-  <div class="card"><h2 id="total">-</h2><p>Mesures totales</p></div>
-  <div class="card"><h2 id="appareils">-</h2><p>Appareils actifs</p></div>
-  <div class="card"><h2 id="derniere">-</h2><p>Dernière mesure</p></div>
+  <!-- Stats cards -->
+  <div class="stats-grid">
+    <div class="stat-card" style="--accent: #00d4ff">
+      <div class="stat-label">Appareils actifs</div>
+      <div class="stat-value" id="stat-devices">—</div>
+      <div class="stat-unit">téléphones</div>
+    </div>
+    <div class="stat-card" style="--accent: #00ff9d">
+      <div class="stat-label">Total mesures</div>
+      <div class="stat-value" id="stat-total">—</div>
+      <div class="stat-unit">enregistrements</div>
+    </div>
+    <div class="stat-card" style="--accent: #ff6b35">
+      <div class="stat-label">Luminosité moy.</div>
+      <div class="stat-value" id="stat-light">—</div>
+      <div class="stat-unit">lux</div>
+    </div>
+    <div class="stat-card" style="--accent: #7c3aed">
+      <div class="stat-label">Batterie moy.</div>
+      <div class="stat-value" id="stat-battery">—</div>
+      <div class="stat-unit">%</div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="main-grid">
+
+    <!-- Chart -->
+    <div class="card">
+      <div class="card-title">
+        Accéléromètre (dernières mesures)
+        <span id="last-update">—</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="accelChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Devices -->
+    <div class="card">
+      <div class="card-title">Appareils connectés</div>
+      <div id="devices-list">
+        <div class="loading"><div class="spinner"></div> Chargement...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom grid -->
+  <div class="bottom-grid">
+
+    <!-- Latest sensors -->
+    <div class="card">
+      <div class="card-title">Dernière mesure</div>
+      <div id="sensors-list">
+        <div class="loading"><div class="spinner"></div> Chargement...</div>
+      </div>
+    </div>
+
+    <!-- Light chart -->
+    <div class="card">
+      <div class="card-title">Luminosité — historique</div>
+      <div class="chart-wrap">
+        <canvas id="lightChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
-<br>
-<table>
-  <thead>
-    <tr>
-      <th>Appareil</th>
-      <th>Heure</th>
-      <th>X</th>
-      <th>Y</th>
-      <th>Z</th>
-      <th>Lumière</th>
-    </tr>
-  </thead>
-  <tbody id="tbody"></tbody>
-</table>
-
-<footer>Aether Network © 2026 — Abidjan, Côte d'Ivoire</footer>
+<footer>
+  AETHER NETWORK © 2026 — Données actualisées toutes les 15s
+</footer>
 
 <script>
-const URL = "https://svjzmkvvhqzonkfewxeu.supabase.co/rest/v1/sensor_data?order=created_at.desc&limit=20";
-const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2anpta3Z2aHF6b25rZmV3eGV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MDk2NjAsImV4cCI6MjA5MjM4NTY2MH0.LCcTDtPOSQz1ACpMk76PnlikVJBYaQWixMUCaAM1lI4";
+const SUPABASE_URL = 'https://svjzmkvvhqzonkfewxeu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2anpta3Z2aHF6b25rZmV3eGV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MDk2NjAsImV4cCI6MjA5MjM4NTY2MH0.LCcTDtPOSQz1ACpMk76PnlikVJBYaQWixMUCaAM1lI4';
 
-async function charger() {
-  const r = await fetch(URL, {headers:{apikey:KEY, Authorization:"Bearer "+KEY}});
-  const data = await r.json();
-  
-  document.getElementById("total").textContent = data.length;
-  const appareils = [...new Set(data.map(d=>d.device_id))].length;
-  document.getElementById("appareils").textContent = appareils;
-  
-  if(data.length > 0) {
-    const d = new Date(data[0].created_at);
-    document.getElementById("derniere").textContent = d.toLocaleTimeString();
-  }
+let accelChart, lightChart;
 
-  const tbody = document.getElementById("tbody");
-  tbody.innerHTML = data.map(d => `
-    <tr>
-      <td>📱 ${d.device_id}</td>
-      <td>${new Date(d.created_at).toLocaleTimeString()}</td>
-      <td>${d.accel_x?.toFixed(2)}</td>
-      <td>${d.accel_y?.toFixed(2)}</td>
-      <td>${d.accel_z?.toFixed(2)}</td>
-      <td>${d.lumiere} lux</td>
-    </tr>
-  `).join("");
+async function fetchData() {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/sensor_data?select=*&order=created_at.desc&limit=50`,
+    { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
+  );
+  return res.json();
 }
 
-charger();
-setInterval(charger, 10000);
+function timeAgo(dateStr) {
+  const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  if (diff < 60) return `il y a ${diff}s`;
+  if (diff < 3600) return `il y a ${Math.floor(diff/60)}min`;
+  return `il y a ${Math.floor(diff/3600)}h`;
+}
+
+function initCharts() {
+  const chartDefaults = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#4a5568', font: { family: 'Space Mono', size: 10 } } } },
+    scales: {
+      x: { ticks: { color: '#4a5568', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+      y: { ticks: { color: '#4a5568', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+    }
+  };
+
+  accelChart = new Chart(document.getElementById('accelChart'), {
+    type: 'line',
+    data: { labels: [], datasets: [
+      { label: 'X', data: [], borderColor: '#00d4ff', borderWidth: 1.5, pointRadius: 0, tension: 0.4 },
+      { label: 'Y', data: [], borderColor: '#7c3aed', borderWidth: 1.5, pointRadius: 0, tension: 0.4 },
+      { label: 'Z', data: [], borderColor: '#00ff9d', borderWidth: 1.5, pointRadius: 0, tension: 0.4 },
+    ]},
+    options: chartDefaults
+  });
+
+  lightChart = new Chart(document.getElementById('lightChart'), {
+    type: 'bar',
+    data: { labels: [], datasets: [{
+      label: 'Lux', data: [],
+      backgroundColor: 'rgba(255,107,53,0.3)',
+      borderColor: '#ff6b35', borderWidth: 1,
+    }]},
+    options: { ...chartDefaults, plugins: { legend: { display: false } } }
+  });
+}
+
+function updateDashboard(data) {
+  if (!data || !data.length) return;
+
+  // Stats
+  const devices = [...new Set(data.map(d => d.device_id))];
+  document.getElementById('stat-devices').textContent = devices.length;
+  document.getElementById('stat-total').textContent = data.length;
+
+  const avgLight = (data.filter(d => d.lumiere).reduce((s, d) => s + d.lumiere, 0) / data.filter(d => d.lumiere).length).toFixed(0);
+  const avgBatt = (data.filter(d => d.battery_level).reduce((s, d) => s + d.battery_level, 0) / data.filter(d => d.battery_level).length).toFixed(0);
+  document.getElementById('stat-light').textContent = avgLight || '—';
+  document.getElementById('stat-battery').textContent = avgBatt || '—';
+
+  // Last update
+  document.getElementById('last-update').textContent = timeAgo(data[0].created_at);
+
+  // Charts — last 20 points
+  const recent = [...data].reverse().slice(-20);
+  const labels = recent.map((_, i) => i + 1);
+  accelChart.data.labels = labels;
+  accelChart.data.datasets[0].data = recent.map(d => d.accel_x?.toFixed(2));
+  accelChart.data.datasets[1].data = recent.map(d => d.accel_y?.toFixed(2));
+  accelChart.data.datasets[2].data = recent.map(d => d.accel_z?.toFixed(2));
+  accelChart.update('none');
+
+  lightChart.data.labels = labels;
+  lightChart.data.datasets[0].data = recent.map(d => d.lumiere?.toFixed(1));
+  lightChart.update('none');
+
+  // Latest sensors
+  const latest = data[0];
+  document.getElementById('sensors-list').innerHTML = `
+    <div class="sensor-row">
+      <div class="sensor-name"><div class="sensor-icon">📡</div> Accél. X/Y/Z</div>
+      <div class="sensor-val">${latest.accel_x?.toFixed(1)} / ${latest.accel_y?.toFixed(1)} / ${latest.accel_z?.toFixed(1)}</div>
+    </div>
+    <div class="sensor-row">
+      <div class="sensor-name"><div class="sensor-icon">💡</div> Luminosité</div>
+      <div class="sensor-val">${latest.lumiere?.toFixed(0)} lux</div>
+    </div>
+    <div class="sensor-row">
+      <div class="sensor-name"><div class="sensor-icon">🎙️</div> Décibels</div>
+      <div class="sensor-val">${latest.decibels?.toFixed(1)} dB</div>
+    </div>
+    <div class="sensor-row">
+      <div class="sensor-name"><div class="sensor-icon">🔋</div> Batterie</div>
+      <div class="sensor-val">${latest.battery_level}%</div>
+      <div class="gauge-bar" style="width:80px"><div class="gauge-fill" style="width:${latest.battery_level}%"></div></div>
+    </div>
+    <div class="sensor-row">
+      <div class="sensor-name"><div class="sensor-icon">🌀</div> Gyro X/Y/Z</div>
+      <div class="sensor-val">${latest.gyro_x?.toFixed(2)} / ${latest.gyro_y?.toFixed(2)} / ${latest.gyro_z?.toFixed(2)}</div>
+    </div>
+    <div class="sensor-row">
+      <div class="sensor-name"><div class="sensor-icon">📍</div> GPS</div>
+      <div class="sensor-val">${latest.lat?.toFixed(3)}, ${latest.lon?.toFixed(3)}</div>
+    </div>
+  `;
+
+  // Devices list
+  document.getElementById('devices-list').innerHTML = devices.map(id => {
+    const lastSeen = data.find(d => d.device_id === id);
+    return `
+      <div class="device-item">
+        <div class="device-avatar">📱</div>
+        <div class="device-info">
+          <div class="device-id">${id}</div>
+          <div class="device-time">${timeAgo(lastSeen.created_at)}</div>
+        </div>
+        <div class="device-status"></div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function refresh() {
+  try {
+    const data = await fetchData();
+    updateDashboard(data);
+  } catch (e) {
+    console.error('Erreur:', e);
+  }
+}
+
+initCharts();
+refresh();
+setInterval(refresh, 15000);
 </script>
 </body>
 </html>
