@@ -27,12 +27,25 @@ jobs:
         with:
           gradle-version: '8.4'
 
-      - name: Build Release APK
-        run: gradle assembleDebug
+      - name: Generate keystore
+        run: |
+          keytool -genkey -v -keystore aether.keystore \
+            -alias aether -keyalg RSA -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Aether Network, OU=Mobile, O=Aether, L=Abidjan, S=CI, C=CI" \
+            -storepass aether2026 -keypass aether2026
+
+      - name: Build signed APK
+        run: |
+          gradle assembleRelease \
+            -Pandroid.injected.signing.store.file=$(pwd)/aether.keystore \
+            -Pandroid.injected.signing.store.password=aether2026 \
+            -Pandroid.injected.signing.key.alias=aether \
+            -Pandroid.injected.signing.key.password=aether2026
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: aether-network-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/release/app-release.apk
           retention-days: 30
